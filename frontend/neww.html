@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Complaint Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="ai-modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add to <head> section -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <span>College Complaint Portal</span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <!-- Dynamic links will be added by JS -->
+        </div>
+        <!-- Notification Bell (only shown for students) -->
+        <div id="notifBell" class="notif-bell" style="display:none;" onclick="openInboxModal()">
+            <i class="fas fa-bell"></i>
+            <span id="notifCount" class="notif-badge" style="display:none;">0</span>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container" id="contentContainer">
+        <!-- Welcome Page (Initial View) -->
+        <div id="welcomePage" class="page active">
+            <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="gradient-text">Welcome to College Complaint Portal</h1>
+                <p class="subtitle">A platform to voice your concerns and improve campus life</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-comment-dots"></i>
+                        <h3>File Complaints</h3>
+                        <p>Submit your concerns easily with categorized options</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Track Status</h3>
+                        <p>Monitor your complaint resolution progress in real-time</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-robot"></i>
+                        <h3>AI Powered</h3>
+                        <p>Smart features for better complaint management</p>
+                    </div>
+                </div>
+
+                <div class="cta-buttons">
+                    <button onclick="showPage('login')" class="btn btn-primary">Login</button>
+                    <button onclick="showPage('signup')" class="btn btn-secondary">Sign Up</button>
+                </div>
+
+                <div class="admin-access">
+                    <button onclick="showAdminLogin()" class="admin-link">
+                        <i class="fas fa-user-shield"></i> Admin Access
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="floating-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2 class="gradient-text" id="loginTitle">Student Login</h2>
+                    <p id="loginSubtitle">Access your complaint dashboard</p>
+                </div>
+
+                <form id="loginForm" class="auth-form">
+                    <div class="toggle-login-type">
+                        <button type="button" class="toggle-btn active" data-type="student"
+                            onclick="switchToStudentLogin()">Student</button>
+                        <button type="button" class="toggle-btn" data-type="admin"
+                            onclick="switchToAdminLogin()">Admin</button>
+                    </div>
+
+                    <div class="form-group" id="studentLoginFields">
+                        <label for="loginRegNumber">
+                            <i class="fas fa-id-card"></i> Register Number
+                        </label>
+                        <input type="text" id="loginRegNumber" name="regNumber"
+                            placeholder="Enter 12-digit number starting with 9204" pattern="9204[0-9]{8}"
+                            title="12-digit number starting with 9204">
+                        <small class="form-hint">Format: 9204XXXXXXXX</small>
+                    </div>
+
+                    <div class="form-group" id="adminLoginFields" style="display: none;">
+                        <label for="adminUsername">
+                            <i class="fas fa-user"></i> Admin Username
+                        </label>
+                        <input type="text" id="adminUsername" name="adminUsername" placeholder="Enter admin username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password"
+                            required>
+                        <small id="passwordHint" class="form-hint">First letter capital, min 8 chars with mix of cases,
+                            numbers & special chars</small>
+                    </div>
+
+                    <div class="form-group admin-credentials" style="display: none;">
+                        <div class="credentials-info">
+                            <h4><i class="fas fa-key"></i> Admin Credentials</h4>
+                            <p>Username: <code>admin</code></p>
+                            <p>Password: <code>Admin@1234</code></p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+
+                    <div class="auth-links">
+                        <p>Don't have an account? <button type="button" onclick="showPage('signup')"
+                                class="text-link">Sign Up</button></p>
+                        <p><button type="button" onclick="showPage('welcome')" class="text-link"><i
+                                    class="fas fa-arrow-left"></i> Back to Home</button></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Page -->
+    <div id="signupPage" class="page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2 class="gradient-text">Create Student Account</h2>
+                    <p>Join the complaint portal</p>
+                </div>
+
+                <form id="signupForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupRegNumber">
+                            <i class="fas fa-id-card"></i> Register Number
+                        </label>
+                        <input type="text" id="signupRegNumber" name="regNumber"
+                            placeholder="Enter 12-digit number starting with 9204" pattern="9204[0-9]{8}"
+                            title="12-digit number starting with 9204" required>
+                        <small class="form-hint">Format: 9204XXXXXXXX</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" id="signupPassword" name="password"
+                            placeholder="Create a strong password"
+                            pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                            title="Must contain at least 8 characters, one uppercase, one lowercase, one number and one special character"
+                            required>
+                        <small class="form-hint">First letter capital, min 8 chars with mix of cases, numbers & special
+                            chars</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">
+                            <i class="fas fa-lock"></i> Confirm Password
+                        </label>
+                        <input type="password" id="confirmPassword" name="confirmPassword"
+                            placeholder="Confirm your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+
+                    <div class="auth-links">
+                        <p>Already have an account? <button type="button" onclick="showPage('login')"
+                                class="text-link">Login</button></p>
+                        <p><button type="button" onclick="showPage('welcome')" class="text-link"><i
+                                    class="fas fa-arrow-left"></i> Back to Home</button></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="page">
+        <div class="dashboard-header">
+            <h2 class="gradient-text">Student Complaint Dashboard</h2>
+            <div class="user-profile" id="studentProfile">
+                <!-- Will be populated by JS -->
+            </div>
+        </div>
+
+        <div class="complaint-section">
+            <div class="complaint-form">
+                <h3><i class="fas fa-edit"></i> File New Complaint</h3>
+
+                <div class="form-group">
+                    <label for="category">
+                        <i class="fas fa-tags"></i> Complaint Category
+                    </label>
+                    <select id="category" class="form-select">
+                        <option value="">Select Category</option>
+                        <option value="infrastructure">Infrastructure</option>
+                        <option value="hostel">Hostel Facilities</option>
+                        <option value="cafeteria">Food</option>
+                        <option value="transport">Transport</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="complaintTitle">
+                        <i class="fas fa-heading"></i> Complaint Title
+                    </label>
+                    <input type="text" id="complaintTitle" placeholder="Brief title of your complaint">
+                </div>
+
+                <div class="form-group">
+                    <label for="complaintDetails">
+                        <i class="fas fa-comment"></i> Complaint Details
+                    </label>
+                    <textarea id="complaintDetails" rows="6"
+                        placeholder="Describe your complaint in detail..."></textarea>
+                </div>
+
+                <button onclick="submitComplaint()" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit Complaint
+                </button>
+            </div>
+
+            <div class="complaint-status">
+                <h3><i class="fas fa-history"></i> Complaint Status</h3>
+                <div class="status-list" id="complaintList">
+                    <!-- Complaints will be loaded here -->
+                    <div class="no-complaints">
+                        <i class="fas fa-inbox"></i>
+                        <p>No complaints filed yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-features">
+            <h3><i class="fas fa-robot"></i> AI Features</h3>
+            <div class="ai-cards">
+                <div class="ai-card">
+                    <i class="fas fa-search"></i>
+                    <h4>Similar Complaints</h4>
+                    <p>AI checks for similar complaints to avoid duplicates</p>
+                    <button onclick="checkSimilarComplaints()" class="btn btn-small">Check Now</button>
+                </div>
+                <div class="ai-card">
+                    <i class="fas fa-envelope"></i>
+                    <h4>Email Updates</h4>
+                    <p>AI generates email notifications for updates</p>
+                    <button onclick="generateEmailUpdate()" class="btn btn-small">Generate Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="page">
+        <div class="dashboard-header">
+            <h2 class="gradient-text">Admin Dashboard</h2>
+            <div class="user-profile" id="adminProfile">
+                <!-- Will be populated by JS -->
+            </div>
+        </div>
+
+        <div class="admin-stats">
+            <div class="stat-card">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3 id="totalComplaints">0</h3>
+                <p>Total Complaints</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <h3 id="pendingComplaints">0</h3>
+                <p>Pending</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <h3 id="resolvedComplaints">0</h3>
+                <p>Resolved</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3 id="activeStudents">0</h3>
+                <p>Active Students</p>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <div class="complaints-table">
+                <h3><i class="fas fa-list"></i> All Complaints</h3>
+                <div class="table-container">
+                    <table id="adminComplaintsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student</th>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Complaints will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-sidebar">
+                <div class="ai-admin-features">
+                    <h3><i class="fas fa-robot"></i> AI Admin Tools</h3>
+
+                    <div class="ai-tool-card">
+                        <i class="fas fa-chart-bar"></i>
+                        <h4>Monthly Report</h4>
+                        <p>AI generates comprehensive monthly complaint reports</p>
+                        <button onclick="generateMonthlyReport()" class="btn btn-small">
+                            <i class="fas fa-file-pdf"></i> Generate Report
+                        </button>
+                    </div>
+
+                    <div class="ai-tool-card">
+                        <i class="fas fa-mail-bulk"></i>
+                        <h4>Bulk Email</h4>
+                        <p>AI drafts email responses to multiple complaints</p>
+                        <button onclick="generateBulkEmails()" class="btn btn-small">
+                            <i class="fas fa-envelope"></i> Draft Emails
+                        </button>
+                    </div>
+
+                    <div class="ai-tool-card">
+                        <i class="fas fa-filter"></i>
+                        <h4>Similarity Check</h4>
+                        <p>AI identifies and groups similar complaints</p>
+                        <button onclick="groupSimilarComplaints()" class="btn btn-small">
+                            <i class="fas fa-object-group"></i> Group Complaints
+                        </button>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <button onclick="deleteAllComplaints()" class="btn btn-action" style="background: rgba(244, 67, 54, 0.2); color: #f44336; border-color: #f44336;">
+                        <i class="fas fa-trash-alt"></i> Delete All Complaints
+                    </button>
+                    <button onclick="toggleResolvedComplaints()" class="btn btn-action" id="filterResolvedBtn">
+                        <i class="fas fa-filter"></i> Hide Resolved
+                    </button>
+                    <button onclick="markAllAsResolved()" class="btn btn-action">
+                        <i class="fas fa-check-double"></i> Mark All Resolved
+                    </button>
+                    <button onclick="exportComplaints()" class="btn btn-action">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <button onclick="viewAllStudents()" class="btn btn-action">
+                        <i class="fas fa-user-graduate"></i> View Students
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End of contentContainer -->
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Inbox Modal -->
+    <div id="inboxModal" class="ai-modal" style="display:none;">
+      <div class="ai-modal-content" style="max-width: 680px;">
+        <span class="ai-close" onclick="closeInboxModal()">&times;</span>
+        <h3><i class="fas fa-inbox"></i> My Inbox</h3>
+        <div id="inboxList" style="margin-top:1rem; max-height: 400px; overflow-y: auto;">
+          <p style="color: var(--text-dim); text-align:center;">Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="ai-modal" style="display:none;">
+      <div class="ai-modal-content" style="max-width: 600px;">
+        <span class="ai-close" onclick="closeEmailModal()">&times;</span>
+        <h3><i class="fas fa-envelope"></i> Send Email to Student</h3>
+        <div class="form-group" style="margin-top: 1rem;">
+            <label>To:</label>
+            <input type="text" id="emailTo" readonly style="background: rgba(255,255,255,0.05); cursor: not-allowed;">
+        </div>
+        <div class="form-group">
+            <label>Subject:</label>
+            <input type="text" id="emailSubject" placeholder="Email subject line">
+        </div>
+        <div class="form-group">
+            <label>Message:</label>
+            <textarea id="emailBody" rows="6" placeholder="Write your email here..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+            <button class="btn btn-secondary" onclick="draftEmailWithAI()"><i class="fas fa-magic"></i> Draft with AI</button>
+            <button class="btn btn-primary" onclick="sendAdminEmail()"><i class="fas fa-paper-plane"></i> Send Email</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student List Modal -->
+    <div id="studentModal" class="ai-modal" style="display:none;">
+      <div class="ai-modal-content" style="max-width: 700px;">
+        <span class="ai-close" onclick="closeStudentModal()">&times;</span>
+        <h3><i class="fas fa-users"></i> Student List</h3>
+        <div class="table-container">
+            <table id="studentTable">
+                <thead><tr><th>Name</th><th>Reg Number</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

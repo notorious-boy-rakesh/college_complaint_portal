@@ -1,0 +1,67 @@
+/* AI Modal Styles */
+.ai-modal {
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.ai-modal-content {
+    background: var(--darker-bg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 600px;
+    color: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.ai-modal-content h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    background: var(--tertiary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-close {
+    color: #aaa;
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.ai-close:hover,
+.ai-close:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+.ai-modal-body {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.loader {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-dim);
+}

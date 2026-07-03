@@ -1,0 +1,25 @@
+DROP DATABASE IF EXISTS college_portal;
+CREATE DATABASE college_portal;
+USE college_portal;
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  regNumber VARCHAR(12),
+  password VARCHAR(100),
+  role ENUM('student','admin')
+);
+
+CREATE TABLE complaints (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  studentName VARCHAR(100),
+  regNumber VARCHAR(12),
+  category VARCHAR(50),
+  title VARCHAR(200),
+  details TEXT,
+  date DATE DEFAULT (CURRENT_DATE),
+  status VARCHAR(20) DEFAULT 'pending'
+);
+
+INSERT INTO users (name, password, role)
+VALUES ('admin', 'Admin@1234', 'admin');
