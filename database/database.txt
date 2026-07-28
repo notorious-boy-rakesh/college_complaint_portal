@@ -5,21 +5,23 @@ USE college_portal;
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
-  regNumber VARCHAR(12),
+  regNumber VARCHAR(12) UNIQUE,
   password VARCHAR(100),
   role ENUM('student','admin')
 );
 
 CREATE TABLE complaints (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
   studentName VARCHAR(100),
   regNumber VARCHAR(12),
   category VARCHAR(50),
   title VARCHAR(200),
   details TEXT,
   date DATE DEFAULT (CURRENT_DATE),
-  status VARCHAR(20) DEFAULT 'pending'
+  status VARCHAR(20) DEFAULT 'pending',
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (name, password, role)
-VALUES ('admin', 'Admin@1234', 'admin');
+INSERT INTO users (name, regNumber, password, role)
+VALUES ('admin', 'admin', 'Admin@1234', 'admin');
