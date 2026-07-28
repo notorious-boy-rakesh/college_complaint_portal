@@ -1,7 +1,9 @@
 // ================= GLOBAL STATE =================
 let currentUser = null;
 let isAdmin = false;
-const API = "http://localhost:3004";
+const API = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
+  ? "http://localhost:3004" 
+  : "https://college-complaint-backend.onrender.com";
 
 // ================= INIT =================
 document.addEventListener("DOMContentLoaded", () => {

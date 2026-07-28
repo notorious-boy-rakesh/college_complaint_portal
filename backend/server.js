@@ -373,7 +373,8 @@ app.use((err, req, res, next) => {
 });
 
 /* ================= SERVER START ================= */
-app.listen(3004, () => {
-  console.log("Backend running on http://localhost:3004");
+const PORT = process.env.PORT || 3004;
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
   console.log("AI Features Enabled:", !!process.env.GEMINI_API_KEY);
 });
