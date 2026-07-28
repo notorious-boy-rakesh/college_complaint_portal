@@ -64,4 +64,28 @@ router.post("/mail/send", verifyAdmin, (req, res) => {
     );
 });
 
+router.get("/complaints/export/pdf", verifyAdmin, (req, res) => {
+    db.query("SELECT * FROM complaints", (err, complaints) => {
+        if (err) return res.status(500).json({ message: "PDF export failed" });
+        const doc = new PDFDocument({ margin: 40 });
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "attachment; filename=complaints_report.pdf");
+        doc.pipe(res);
+        doc.fontSize(18).text("College Complaint Portal", { align: "center" }).moveDown(0.5);
+        doc.fontSize(14).text("Complaints Report", { align: "center" }).moveDown();
+        complaints.forEach((c, i) => {
+            doc.fontSize(12).text(`Complaint #${i + 1}`, { underline: true });
+            doc.text(`Student Name : ${c.studentName}`);
+            doc.text(`Register No  : ${c.regNumber}`);
+            doc.text(`Category     : ${c.category}`);
+            doc.text(`Title        : ${c.title}`);
+            doc.text(`Details      : ${c.details}`);
+            doc.text(`Status       : ${c.status}`);
+            doc.text(`Date         : ${new Date(c.date).toDateString()}`);
+            doc.moveDown();
+        });
+        doc.end();
+    });
+});
+
 module.exports = router;

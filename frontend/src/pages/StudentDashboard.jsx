@@ -1,11 +1,17 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import AIModal from '../components/AIModal';
 
 const StudentDashboard = ({ toastRef }) => {
     const { currentUser, logout } = useContext(AuthContext);
     const [complaints, setComplaints] = useState([]);
     const [formData, setFormData] = useState({ category: '', title: '', details: '' });
+
+    const [aiModalOpen, setAiModalOpen] = useState(false);
+    const [aiTitle, setAiTitle] = useState('');
+    const [aiContent, setAiContent] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
 
     useEffect(() => {
         loadComplaints();
@@ -35,6 +41,27 @@ const StudentDashboard = ({ toastRef }) => {
             if (error.response?.status === 401) logout();
             toastRef.current?.show('Failed to submit', 'error');
         }
+    };
+
+    const checkSimilarity = async () => {
+        if (!formData.title || !formData.details) {
+            toastRef.current?.show('Fill Title and Details first', 'error');
+            return;
+        }
+        setAiTitle('Similarity Check');
+        setAiContent('');
+        setAiLoading(true);
+        setAiModalOpen(true);
+        try {
+            const res = await axios.post('/api/ai/similar-complaints', { 
+                title: formData.title, 
+                details: formData.details 
+            });
+            setAiContent(res.data.result || "No similar complaints found.");
+        } catch (e) {
+            setAiContent("Failed to connect to AI Service.");
+        }
+        setAiLoading(false);
     };
 
     return (
@@ -71,7 +98,10 @@ const StudentDashboard = ({ toastRef }) => {
                         <label><i className="fas fa-comment"></i> Details</label>
                         <textarea rows="6" placeholder="Describe in detail..." value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})}></textarea>
                     </div>
-                    <button onClick={submitComplaint} className="btn btn-primary"><i className="fas fa-paper-plane"></i> Submit</button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={submitComplaint} className="btn btn-primary"><i className="fas fa-paper-plane"></i> Submit</button>
+                        <button onClick={checkSimilarity} className="btn btn-secondary"><i className="fas fa-robot"></i> Check Similarity</button>
+                    </div>
                 </div>
 
                 <div className="complaint-status">
@@ -91,6 +121,14 @@ const StudentDashboard = ({ toastRef }) => {
                     </div>
                 </div>
             </div>
+
+            <AIModal 
+                isOpen={aiModalOpen} 
+                onClose={() => setAiModalOpen(false)} 
+                title={aiTitle} 
+                content={aiContent} 
+                loading={aiLoading} 
+            />
         </div>
     );
 };

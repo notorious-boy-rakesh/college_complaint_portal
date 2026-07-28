@@ -7,11 +7,8 @@ router.post("/complaint", verifyToken, (req, res) => {
     const { category, title, details } = req.body;
     const studentName = req.user.name;
     const regNumber = req.user.regNumber;
-    const user_id = req.user.id;
-
-    // Added user_id to query based on our new DB schema we'll deploy
-    const sql = `INSERT INTO complaints (user_id, studentName, regNumber, category, title, details) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [user_id, studentName, regNumber, category, title, details], err => {
+    const sql = `INSERT INTO complaints (studentName, regNumber, category, title, details) VALUES (?, ?, ?, ?, ?)`;
+    db.query(sql, [studentName, regNumber, category, title, details], err => {
         if (err) return res.status(500).json({ message: "Failed to submit complaint" });
         res.json({ message: "Complaint submitted successfully" });
     });
@@ -19,8 +16,8 @@ router.post("/complaint", verifyToken, (req, res) => {
 
 router.get("/complaints/my", verifyToken, (req, res) => {
     db.query(
-        "SELECT * FROM complaints WHERE user_id=? ORDER BY id DESC",
-        [req.user.id],
+        "SELECT * FROM complaints WHERE regNumber=? ORDER BY id DESC",
+        [req.user.regNumber],
         (err, result) => {
             if(err) return res.status(500).json({message: "Failed to fetch"});
             res.json(result);
