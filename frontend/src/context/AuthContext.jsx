@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
     const API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
         ? "http://localhost:3004" 
-        : "https://college-complaint-backend.onrender.com";
+        : "https://college-complaint-portal-a4f7.onrender.com";
 
     axios.defaults.baseURL = API_URL;
 
