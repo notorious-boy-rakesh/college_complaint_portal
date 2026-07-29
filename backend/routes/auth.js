@@ -25,7 +25,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", (req, res) => {
     const { regNumber, username, password, isAdmin } = req.body;
     const sql = isAdmin
-        ? "SELECT * FROM users WHERE username=? AND role='admin'"
+        ? "SELECT * FROM users WHERE name=? AND role='admin'"
         : "SELECT * FROM users WHERE regNumber=? AND role='student'";
     const value = isAdmin ? username : regNumber;
 
