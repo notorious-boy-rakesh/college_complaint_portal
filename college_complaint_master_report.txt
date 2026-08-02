@@ -1,0 +1,99 @@
+# College Complaint Portal — Comprehensive Development & Architecture Report (Master Prompt)
+
+## 1. Project Identity & Overview
+
+**Project Name:** College Complaint Portal
+**Type:** Full-Stack Web Application (MySQL, Express, React, Node.js)
+**Core Objective:** To streamline and digitize the grievance redressal process in a college environment. It provides a secure platform for students to lodge complaints, track their status, and receive communications. For the administration, it offers a centralized dashboard to manage, resolve, and analyze complaints, augmented with advanced **Generative AI** capabilities to draft responses and generate insights.
+
+---
+
+## 2. Technology Stack & Detailed Usage
+
+### Backend (Node.js & Express)
+- **Framework**: Express.js, structured modularly with separate route files (`auth.js`, `student.js`, `admin.js`, `ai.js`).
+- **Database**: **MySQL** (using the `mysql2` package). The database connection (`db.js`) utilizes connection pooling for stability and scalability.
+- **Authentication**: Stateless authentication using **JSON Web Tokens (JWT)** and **bcrypt** for secure password hashing.
+- **AI Integration**: Implements the **Google Gemini API** (`@google/genai`) to provide intelligent features like automatic email drafting, complaint similarity checks, grouping, and trend reporting.
+- **PDF Generation**: Uses `pdfkit` to allow admins to export complaint reports directly into downloadable PDF files.
+- **Resilience**: A global error handler in `server.js` intercepts unhandled crashes, ensuring the server doesn't go down during unexpected AI or DB failures.
+
+### Frontend (React & Vite)
+- **Build Tool**: **Vite** for rapid development and optimized production builds.
+- **Core UI**: **React 19** with **React Router v7** (`react-router-dom`) for seamless SPA navigation.
+- **State Management**: React's native **Context API** (`AuthContext.jsx`) is used to manage global authentication state (login status, user role, tokens).
+- **Styling**: Standard CSS (`index.css`, `App.css`) is used to style the application. Custom UI components like `Toast.jsx` handle notifications.
+- **Data Fetching**: Native `axios` is used to communicate securely with the backend APIs.
+
+---
+
+## 3. Errors Encountered & How They Were Overcome
+
+During the development of this project, several architectural and runtime challenges were addressed:
+
+### A. Missing API Keys & AI Service Crashes
+- **Error/Challenge**: If the server booted without a valid `GEMINI_API_KEY` in the `.env` file, the AI routes would crash the app when an admin tried to draft an email or generate a report.
+- **Resolution**: Implemented graceful error handling in `ai.js`. If the key is missing or the AI service fails, the backend catches the error and returns a simulated "Mock Response" alerting the user, rather than bringing down the entire Node.js process.
+
+### B. Database Synchronization and Table Existence
+- **Error/Challenge**: Deploying the app to new environments often resulted in crashes because certain tables (like `mail_inbox`) didn't exist in the database.
+- **Resolution**: Added an auto-initialization script directly inside `server.js` that checks for and creates the `mail_inbox` table (`CREATE TABLE IF NOT EXISTS`) upon server startup.
+
+### C. Password Hashing Inconsistencies (Legacy Data)
+- **Error/Challenge**: When testing, some manually seeded users had plain-text passwords, while newly registered users had `bcrypt` hashed passwords, causing login failures.
+- **Resolution**: Modified the login logic in `auth.js` to dynamically check the format of the stored password. If it starts with `$2b$` or `$2a$`, it uses `bcrypt.compare`; otherwise, it falls back to a direct string comparison, ensuring both legacy test data and new secure data work seamlessly.
+
+### D. CORS (Cross-Origin Resource Sharing)
+- **Error/Challenge**: The Vite frontend (localhost:5173) was blocked by browsers when trying to access the backend APIs (localhost:3004).
+- **Resolution**: The `cors` middleware was integrated globally in `server.js` to whitelist frontend requests.
+
+---
+
+## 4. End-to-End System Workflows
+
+### 1. Student Complaint Flow
+1. **Signup/Login**: Student creates an account (saved to MySQL). Logs in and receives a JWT.
+2. **Dashboard**: Student navigates to `StudentDashboard.jsx`.
+3. **Lodging a Complaint**: Submits category, title, and details. `student.js` handles the POST request, extracting the `regNumber` from the verified JWT.
+4. **Inbox**: Students can view direct messages sent by the admin via the `mail_inbox` table.
+
+### 2. Admin Management Flow
+1. **Login**: Admin logs in (verified via the `role='admin'` check in the database).
+2. **Dashboard**: Admin views all complaints on `AdminDashboard.jsx`.
+3. **Resolution**: Admin can change complaint statuses to "resolved", delete specific students, or wipe the entire complaints table if needed.
+4. **Communication**: Admin can open `EmailModal.jsx` to send a direct message to a student's inbox.
+5. **Reporting**: Admin can click "Export to PDF" which hits the `/complaints/export/pdf` route, generating a customized PDF report on the fly.
+
+### 3. AI Assistance Flow (The Gemini Integration)
+1. **Drafting Emails**: Admin clicks "AI Draft" on a pending complaint. `/api/ai/draft-email` takes the complaint details, feeds them to Gemini 2.5 Flash, and returns a professional 3-sentence email response.
+2. **Monthly Reports**: Admin requests a report. The backend fetches the last 50 complaints and asks Gemini to summarize trends and student sentiment.
+3. **Grouping**: Gemini analyzes all active complaints and groups them by theme, helping admins tackle similar issues simultaneously.
+
+---
+
+## 5. Future Development & Update Roadmap
+
+To improve and scale the College Complaint Portal, future development should focus on:
+
+### Phase 1: Security & Validation
+- **Input Sanitization**: Implement libraries like `express-validator` to sanitize user inputs and prevent SQL injection or XSS attacks, especially in complaint details.
+- **File Uploads**: Integrate `multer` to allow students to attach images or documents (e.g., screenshots of issues) to their complaints.
+
+### Phase 2: User Experience (Frontend)
+- **Migration to Tailwind CSS**: Refactor standard CSS files into Tailwind utility classes to make the UI more maintainable, responsive, and modern.
+- **Real-time Notifications**: Replace manual fetching for the `mail_inbox` with **Socket.io** to provide real-time toast notifications when an admin replies to a complaint.
+
+### Phase 3: AI & Analytics (Backend)
+- **Vector Search / Embeddings**: Instead of sending all 50 complaints in a text prompt for similarity checks, generate embeddings for complaints when they are created and store them in a vector database (like Pinecone or pgvector) for vastly superior similarity matching.
+- **Automated Routing**: Use AI to automatically assign a category or department (e.g., IT, Hostel, Academics) based on the complaint text upon submission.
+
+---
+
+## 6. Prompt Instructions for Future AI Agents
+
+*If you are an AI assistant receiving this document as a prompt, follow these rules:*
+1. **Acknowledge** the MySQL + Express backend architecture and the React (Vite) frontend.
+2. **Authentication First**: Ensure any new backend routes you create are protected using the `verifyToken` or `verifyAdmin` middlewares from `middleware/auth.js`.
+3. **AI Responsibilities**: If extending AI features, place them strictly inside `routes/ai.js` and ensure you use the `generateAIResponse` wrapper function to maintain the fallback safety net.
+4. **State Management**: If adding new frontend features, rely on `AuthContext.jsx` for user data. Do not install Redux; keep the state lightweight.
+5. **Wait for the user** to specify the exact feature they want to build or bug they want to fix before writing code.
