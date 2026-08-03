@@ -33,6 +33,11 @@ app.use("/", studentRoutes);
 app.use("/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
 
+// Ping Route for server keep-alive
+app.get('/ping', (req, res) => {
+    res.status(200).json({ message: 'Server is active' });
+});
+
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error("Unhandled API Crash Intercepted:", err.stack);
@@ -43,4 +48,17 @@ const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
   console.log("AI Features Enabled:", !!process.env.GEMINI_API_KEY);
+
+  // Self-ping every 15 minutes to prevent the server from sleeping
+  const PING_INTERVAL = 15 * 60 * 1000; // 15 minutes
+  setInterval(() => {
+    const url = process.env.SERVER_URL ? `${process.env.SERVER_URL}/ping` : `http://localhost:${PORT}/ping`;
+    const protocol = url.startsWith('https') ? require('https') : require('http');
+    
+    protocol.get(url, (res) => {
+        console.log(`[Self-Ping] Status: ${res.statusCode} at ${new Date().toISOString()}`);
+    }).on('error', (err) => {
+        console.error(`[Self-Ping] Error:`, err.message);
+    });
+  }, PING_INTERVAL);
 });
